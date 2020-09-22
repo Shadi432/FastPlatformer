@@ -4,7 +4,6 @@ function Player:new(x,y)
    Player.super.new(self,x,y, "player.png") 
    
    self.strength = 50
-   self.gravity = 400
 end
 
 function Player:update(dt)

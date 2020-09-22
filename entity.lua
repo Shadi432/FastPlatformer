@@ -58,6 +58,8 @@ function Entity:resolveCollision(e)
             if self.y + self.height/2 < e.y + self.height/2 then
                 local pushback = self.y + self.height - e.y
                 self.y = self.y - pushback
+                
+                self.gravity = 0
             else
                 local pushback = e.y + e.height - self.y
                 self.y = self.y + pushback
