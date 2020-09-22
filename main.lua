@@ -14,11 +14,35 @@ function love.load()
     box2 = Box(300,250)
     
     objects = {}
+    walls = {}
     
     table.insert(objects,player)
     table.insert(objects,wall)
     table.insert(objects,box1)
     table.insert(objects,box2)
+    
+       map = {
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1},
+        {1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+    }
+    
+    for i,v in ipairs(map) do
+        for j,w in ipairs(v) do
+            if w == 1 then
+               table.insert(walls,Wall((j-1)*50, (i-1)*50)) 
+            end
+        end
+    end
 end
 
 function love.update(dt)
@@ -28,6 +52,10 @@ function love.update(dt)
     
     for i,v in ipairs (objects) do
         v:update(dt)
+    end
+    
+    for i,v in ipairs (walls) do
+       v:update(dt) 
     end
     
     
@@ -48,11 +76,24 @@ function love.update(dt)
                 end
             end
         end
+        
+        for i,wall in ipairs(walls) do
+            for j,obj in ipairs (objects) do
+                local collision = obj:resolveCollision(wall)
+                if collision then
+                    loop = true
+                end
+            end
+        end
     end
 end
 
 function love.draw()
     for i,v in ipairs (objects) do
         v:draw()
+    end
+    
+    for i,v in ipairs (walls) do
+       v:draw() 
     end
 end

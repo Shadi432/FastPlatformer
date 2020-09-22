@@ -59,9 +59,6 @@ function Entity:resolveCollision(e)
                 
             end
         end
-        --[[local pushback = self.x + self.width - e.x
-        self.x = self.x - pushback
-        ]]--
         return true
     end
     
@@ -73,7 +70,6 @@ function Entity:draw()
 end
 
 function Entity:checkCollision(e)
-    -- e is other entity we're checking if we're colliding with
     
     return self.x + self.width > e.x and self.x < e.x + e.width and self.y + self.height > e.y and self.y < e.y + e.height 
 end
