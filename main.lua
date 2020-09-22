@@ -11,14 +11,24 @@ function love.load()
     player = Player(100,100)
     wall = Wall(200,100)
     box1 = Box(300,200)
+    
+    objects = {}
+    
+    table.insert(objects,player)
+    table.insert(objects,wall)
+    table.insert(objects,box1)
 end
 
 function love.update(dt)
-    player:update(dt)
-    wall:update(dt)
-    box1:update(dt)
-    player:resolveCollision(wall)
-    box1:resolveCollision(player)
+    
+    for i,v in ipairs (objects) do
+        v:update(dt)
+        for j,k in ipairs (objects) do
+            if v ~= k then
+               v:resolveCollision(k) 
+            end
+        end
+    end
 end
 
 function love.draw()
