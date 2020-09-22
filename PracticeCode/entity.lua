@@ -19,8 +19,8 @@ end
 
 function Entity:resolveCollision(e)
    if self:checkCollision(e) then
-       self.x = self.last.x
-       self.y = self.last.y
+        local pushback = self.x + self.width - e.x
+        self.x = self.x - pushback
     end
 end
 
