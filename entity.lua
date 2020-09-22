@@ -13,6 +13,8 @@ function Entity:new(x, y, image_path)
     
     self.strength = 0
     self.tempStrength = 0
+    self.gravity = 0
+    self.weight = 400
 end
 
 function Entity:update(dt)
@@ -20,6 +22,9 @@ function Entity:update(dt)
         self.last.y = self.y
         
         self.tempStrength = self.strength
+        self.gravity = self.gravity + self.weight * dt
+        
+        self.y = self.y + self.gravity * dt
 end
 
 function Entity:wasVerticallyAligned(e)
