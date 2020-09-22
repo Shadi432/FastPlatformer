@@ -23,16 +23,17 @@ function love.update(dt)
     
     for i,v in ipairs (objects) do
         v:update(dt)
-        for j,k in ipairs (objects) do
-            if v ~= k then
-               v:resolveCollision(k) 
-            end
+    end
+    
+    for i=1, #objects-1 do
+        for j =i+1, #objects do
+            objects[i]:resolveCollision(objects[j])
         end
     end
 end
 
 function love.draw()
-    player:draw()
-    wall:draw()
-    box1:draw()
+    for i,v in ipairs (objects) do
+        v:draw()
+    end
 end
