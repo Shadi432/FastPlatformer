@@ -7,18 +7,18 @@ function Entity:new(x, y, image_path)
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
     
-    self.last = {}
+    self.last = {} -- Keeps track of last position of character before updates
     self.last.x = self.x
     self.last.y = self.y
     
     self.strength = 0
     self.tempStrength = 0
     self.gravity = 0
-    self.weight = 400
+    self.weight = 700
 end
 
 function Entity:update(dt)
-    self.last.x = self.x
+    self.last.x = self.x -- Needs to be updated to latest positio nbefore position may be changed later in update, so that this actually ends up being the last position
     self.last.y = self.y
     
     self.tempStrength = self.strength
@@ -48,20 +48,39 @@ function Entity:resolveCollision(e)
        
         if self:wasVerticallyAligned(e) then -- If it's alligned vertically, push it to the right since it's not alligned horizontally
             if self.x + self.width/2 < e.x + self.width/2 then
-                self:collide(e,"right")
+                local a = self:checkResolve(e,"right")
+                local b = self:checkResolve(self, "left")
+                
+                if a and b then
+                    self:collide(e,"right")
+                end
             else
-                self:collide(e, "left")
+                local a = self:checkResolve(e, "left")
+                local b = e:checkResolve(self, "right")
+                
+                if a and b then
+                   self:collide(e, "left") 
+                end
             end
         elseif self:wasHorizontallyAligned(e) then
             if self.y + self.height/2 < e.y + self.height/2 then
-                self:collide(e,"bottom")
+                local a = self:checkResolve(e, "bottom")
+                local b = e:checkResolve(self, "top")
+                
+                if a and b then
+                    self:collide(e,"bottom")
+                end
             else
-                self:collide(e, "top")
+                local a = self:checkResolve(e, "bottom") 
+                local b = e:checkResolve(self, "top")
+                
+                if a and b then
+                    self:collide(e, "top")
+                end
             end
         end
         return true
     end
-    
     return false
 end
 
@@ -90,4 +109,8 @@ function Entity:collide(e,direction)
         local pushback = e.y + e.height - self.y
         self.y = self.y + pushback
     end
+end
+
+function Entity:checkResolve(e,direction) 
+   return true 
 end

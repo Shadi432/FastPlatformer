@@ -8,7 +8,7 @@ function Player:new(x,y)
 end
 
 function Player:update(dt)
-    Player.super.update(self,dt)
+    Player.super.update(self,dt) -- So it inherits and slightly overrites the update function from the inherit class.
     
     if love.keyboard.isDown("left") then
         self.x = self.x - 200 * dt
@@ -16,12 +16,14 @@ function Player:update(dt)
         self.x = self.x + 200 * dt
     end
     
-    self.y = self.y + 200 * dt
+    if self.last.y ~= self.y then -- If their y has changed from the last recorded one, they're not on the ground
+        self.canJump = true
+    end
 end
 
 function Player:jump(dt)
     if self.canJump then
-       self.gravity = -300
+       self.gravity = -600
        self.canJump = false
     end
 end
@@ -32,4 +34,15 @@ function Player:collide(e,direction)
     if direction == "bottom" then
         self.canJump = true
     end
+end
+
+function Player:checkResolve(e, direction)
+   if e:is(Box) then
+        if direction == "bottom" then
+           return true
+        else 
+            return false
+        end
+    end
+    return true
 end
