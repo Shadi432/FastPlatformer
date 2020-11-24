@@ -7,7 +7,7 @@ function Entity:new(x, y, image_path)
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
     
-    self.last = {}
+    self.last = {} -- Keeps track of last position of character before updates
     self.last.x = self.x
     self.last.y = self.y
     
@@ -18,13 +18,17 @@ function Entity:new(x, y, image_path)
 end
 
 function Entity:update(dt)
-    self.last.x = self.x
+    self.last.x = self.x -- Needs to be updated to latest position before position may be changed later in update, so that this actually ends up being the last position
     self.last.y = self.y
     
     self.tempStrength = self.strength
     self.gravity = self.gravity + self.weight * dt
     
     self.y = self.y + self.gravity * dt
+end
+
+function Entity:draw()
+    love.graphics.draw(self.image, self.x, self.y)
 end
 
 function Entity:wasVerticallyAligned(e)
@@ -48,28 +52,44 @@ function Entity:resolveCollision(e)
        
         if self:wasVerticallyAligned(e) then -- If it's alligned vertically, push it to the right since it's not alligned horizontally
             if self.x + self.width/2 < e.x + self.width/2 then
-                self:collide(e,"right")
+                local a = self:checkResolve(e,"right")
+                local b = e:checkResolve(self, "left")
+                
+                if a and b then
+                    self:collide(e,"right")
+                end
             else
-                self:collide(e, "left")
+                local a = self:checkResolve(e, "left")
+                local b = e:checkResolve(self, "right")
+                
+                if a and b then
+                   self:collide(e, "left") 
+                end
             end
         elseif self:wasHorizontallyAligned(e) then
             if self.y + self.height/2 < e.y + self.height/2 then
-                self:collide(e,"bottom")
+                local a = self:checkResolve(e, "bottom")
+                local b = e:checkResolve(self, "top")
+            
+            
+                if a and b then
+                    self:collide(e,"bottom")
+                end
             else
-                self:collide(e, "top")
+                local a = self:checkResolve(e, "top") 
+                local b = e:checkResolve(self, "bottom")
+                
+                if a and b then
+                    self:collide(e, "top")
+                end
             end
         end
         return true
     end
-    
     return false
 end
 
-function Entity:draw()
-    love.graphics.draw(self.image, self.x, self.y)
-end
-
-function Entity:checkCollision(e)
+function Entity:checkCollision(e) -- AABB Collision
     
     return self.x + self.width > e.x and self.x < e.x + e.width and self.y + self.height > e.y and self.y < e.y + e.height 
 end
@@ -80,8 +100,8 @@ function Entity:collide(e,direction)
         local pushback = self.x + self.width - e.x
         self.x = self.x - pushback
     elseif direction == "left" then
-        local pushback = self.x + e.width - self.x
-        self.x = self.x + pushback
+        local pushback = self.x - (e.width + e.x)
+        self.x = self.x - pushback
     elseif direction == "bottom" then
         local pushback = self.y + self.height - e.y
         self.y = self.y - pushback
@@ -90,4 +110,8 @@ function Entity:collide(e,direction)
         local pushback = e.y + e.height - self.y
         self.y = self.y + pushback
     end
+end
+
+function Entity:checkResolve(e,direction) 
+   return true 
 end
